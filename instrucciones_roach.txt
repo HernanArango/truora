@@ -1,0 +1,19 @@
+sudo docker pull cockroachdb/cockroach:v2.1.0
+docker network create -d bridge roachnet
+
+
+docker run -d \
+--name=roach1 \
+--hostname=roach1 \
+--net=roachnet \
+-p 26257:26257 -p 9090:9090  \
+-v "${PWD}/cockroach-data/roach1:/cockroach/cockroach-data"  \
+cockroachdb/cockroach:v2.1.0 start --insecure
+
+#entrar a sql
+docker exec -it roach1 ./cockroach sql --insecure
+
+CREATE USER IF NOT EXISTS roach;
+GRANT ALL ON DATABASE recipes TO roach;
+
+GRANT ALL ON TABLE recipes.* TO roach;
